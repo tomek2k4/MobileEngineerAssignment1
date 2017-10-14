@@ -8,5 +8,5 @@ import java.util.List;
 import rx.Observable;
 
 public interface DataProvider {
-    Observable<GithubSearchResultWrapper<List<RepositoryItem>>> getSquareRepositories();
+    Observable<GithubSearchResultWrapper<List<RepositoryItem>>> getRepositoriesForUserSquare();
 }

@@ -7,7 +7,7 @@
     >
 
     <TextView
-        android:id="@+id/fc_empty_list"
+        android:id="@+id/ar_empty_list"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:gravity="center"
@@ -17,15 +17,18 @@
         android:layout_weight="1" />
 
 
+
     <RelativeLayout
-        android:id="@+id/fc_loading"
+        android:id="@+id/ar_loading"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:visibility="gone">
+        android:layout_weight="10"
+        android:visibility="gone"
+        android:layout_gravity="center"
+        >
 
         <TextView
-            android:id="@+id/fc_loading_text"
+            android:id="@+id/ar_loading_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
@@ -35,24 +38,29 @@
             style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignLeft="@+id/fc_loading_text"
-            android:layout_alignRight="@+id/fc_loading_text"
-            android:layout_below="@+id/fc_loading_text"
+            android:layout_alignLeft="@+id/ar_loading_text"
+            android:layout_alignRight="@+id/ar_loading_text"
+            android:layout_below="@+id/ar_loading_text"
             android:indeterminateOnly="true" />
 
     </RelativeLayout>
 
+
+
     <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/fc_refresh_layout"
+        android:id="@+id/ar_refresh_layout"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:orientation="vertical"
         android:focusable="true"
         android:paddingLeft="@dimen/default_padding"
-        android:paddingRight="@dimen/default_padding">
+        android:paddingRight="@dimen/default_padding"
+        android:weightSum="1"
+        android:layout_weight="10"
+        >
 
         <android.support.v7.widget.RecyclerView
-            android:id="@+id/fc_list"
+            android:id="@+id/ar_list"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:fadeScrollbars="true"

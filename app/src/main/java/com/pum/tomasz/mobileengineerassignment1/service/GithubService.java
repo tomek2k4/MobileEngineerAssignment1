@@ -1,14 +1,13 @@
 package com.pum.tomasz.mobileengineerassignment1.service;
 
-import com.pum.tomasz.mobileengineerassignment1.model.GitResult;
 import com.pum.tomasz.mobileengineerassignment1.model.GithubSearchResultWrapper;
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 
 import java.util.List;
 
-import retrofit2.Call;
-import retrofit2.http.GET;
-import retrofit2.http.Query;
+
+import retrofit.http.GET;
+import retrofit.http.Query;
 import rx.Observable;
 
 /**

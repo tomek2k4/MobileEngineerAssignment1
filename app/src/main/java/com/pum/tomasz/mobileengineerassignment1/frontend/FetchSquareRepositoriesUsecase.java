@@ -21,6 +21,6 @@ public class FetchSquareRepositoriesUsecase implements Usecase<List<RepositoryIt
 
     @Override
     public Observable<List<RepositoryItem>> execute() {
-        return dataProvider.getSquareRepositories().map(new ResponseMappingFunc<List<RepositoryItem>>());
+        return dataProvider.getRepositoriesForUserSquare().map(new ResponseMappingFunc<List<RepositoryItem>>());
     }
 }

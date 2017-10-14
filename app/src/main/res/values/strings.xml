@@ -2,4 +2,6 @@
     <string name="app_name">MobileEngineerAssignment1</string>
     <string name="main_repositories_empty">No repositories for that user</string>
     <string name="main_repositories_loading">Loading repositories</string>
+    <string name="repo_name">Name: %s</string>
+    <string name="repo_desc">Description: %s</string>
 </resources>

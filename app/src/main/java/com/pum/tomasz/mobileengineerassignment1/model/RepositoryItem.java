@@ -9,6 +9,9 @@ import lombok.Data;
 
 @Data
 public class RepositoryItem {
+
+    public static final String JSON_ARRAY_NAME = "items";
+
     private Integer id;
     private String name;
     private String fullName;
