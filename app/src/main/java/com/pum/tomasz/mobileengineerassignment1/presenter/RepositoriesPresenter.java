@@ -18,14 +18,18 @@ import rx.schedulers.Schedulers;
 public class RepositoriesPresenter implements Presenter<RepositoriesView> {
 
     private Subscription getRepositoriesSubscription;
+    private Subscription clickItemSubscription;
     private RepositoriesView repositoriesView;
     private FetchSquareRepositoriesUsecase fetchSquareRepositoriesUsecase;
 
     private List<RepositoryItem> repositoriesCollection;
+    private RepositoryItem selectedItem;
 
     public RepositoriesPresenter(FetchSquareRepositoriesUsecase fetchSquareRepositoriesUsecase) {
         this.fetchSquareRepositoriesUsecase = fetchSquareRepositoriesUsecase;
     }
+
+
 
     @Override
     public void onCreate() {
@@ -42,6 +46,11 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
         if (getRepositoriesSubscription != null && !getRepositoriesSubscription.isUnsubscribed()) {
             getRepositoriesSubscription.unsubscribe();
         }
+
+        if(clickItemSubscription != null && !clickItemSubscription.isUnsubscribed()) {
+            clickItemSubscription.unsubscribe();
+        }
+
     }
 
     @Override
@@ -92,4 +101,16 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
     }
 
 
+    public void setClickItemSubscription(Subscription subscription) {
+        clickItemSubscription = subscription;
+    }
+
+    public Subscription getClickItemSubscription() {
+        return clickItemSubscription;
+    }
+
+    public void setSelectedItem(RepositoryItem selectedItem) {
+        this.selectedItem = selectedItem;
+        repositoriesView.showRepositoryDetail(selectedItem);
+    }
 }

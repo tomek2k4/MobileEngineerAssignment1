@@ -1,10 +1,12 @@
 package com.pum.tomasz.mobileengineerassignment1.activity;
 
+import android.content.Intent;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 
 import com.google.gson.FieldNamingPolicy;
@@ -33,6 +35,9 @@ import butterknife.ButterKnife;
 import retrofit.GsonConverterFactory;
 import retrofit.Retrofit;
 import retrofit.RxJavaCallAdapterFactory;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 
 public class RepositoriesActivity extends AppCompatActivity implements RepositoriesView {
@@ -70,13 +75,33 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
         initRepositories();
         setupRefreshLayout();
 
+        initOnClicListenerSubscription();
+    }
 
+    private void initOnClicListenerSubscription() {
+        repositoriesPresenter.setClickItemSubscription(
+                repositoriesAdapter.getPositionClicks()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<RepositoryItem>() {
+                    @Override
+                    public void call(RepositoryItem repositoryItem) {
+                        Log.d("Tomek","Clicked on repository with name: " + repositoryItem.getName());
+
+                        repositoriesPresenter.setSelectedItem(repositoryItem);
+                    }
+                })
+        );
     }
 
     @Override
     protected void onStart() {
         super.onStart();
         repositoriesPresenter.onStart();
+        if(repositoriesPresenter.getClickItemSubscription() == null || repositoriesPresenter.getClickItemSubscription().isUnsubscribed()) {
+            initOnClicListenerSubscription();
+        }
+
     }
 
     @Override
@@ -98,6 +123,14 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
         };
         runOnUiThread(myRunnable);
 
+    }
+
+    @Override
+    public void showRepositoryDetail(RepositoryItem repositoryItem) {
+        // repository item will be shown in new activity
+        Intent repositoryDetailsIntent = new Intent(RepositoriesActivity.this,RepositoryActivity.class);
+        repositoryDetailsIntent.putExtra("repoItem",repositoryItem);
+        startActivity(repositoryDetailsIntent);
     }
 
 

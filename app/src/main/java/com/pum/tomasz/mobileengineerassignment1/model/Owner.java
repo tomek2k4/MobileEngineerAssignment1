@@ -1,5 +1,7 @@
 package com.pum.tomasz.mobileengineerassignment1.model;
 
+import java.io.Serializable;
+
 import lombok.Data;
 
 /**
@@ -7,7 +9,7 @@ import lombok.Data;
  */
 
 @Data
-public class Owner {
+public class Owner implements Serializable {
 
     private String login;
     private Integer id;

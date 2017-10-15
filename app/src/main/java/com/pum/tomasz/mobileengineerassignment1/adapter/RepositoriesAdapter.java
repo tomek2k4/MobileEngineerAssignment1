@@ -2,6 +2,7 @@ package com.pum.tomasz.mobileengineerassignment1.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,10 +14,15 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import rx.Observable;
+import rx.subjects.PublishSubject;
+
 public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoryViewHolder> {
 
     private List<RepositoryItem> reposList = new ArrayList<>();
     private Context context;
+
+    private final PublishSubject<RepositoryItem> onClickSubject = PublishSubject.create();
 
     public RepositoriesAdapter(Context context) {
         this.context = context;
@@ -35,9 +41,20 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoryViewHold
 
     @Override
     public void onBindViewHolder(RepositoryViewHolder holder, int position) {
-        RepositoryItem repoItem = reposList.get(position);
+        final RepositoryItem repoItem = reposList.get(position);
         holder.name.setText(getString(R.string.repo_name, repoItem.getName()));
         holder.description.setText(getString(R.string.repo_desc, repoItem.getDescription()));
+
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onClickSubject.onNext(repoItem);
+            }
+        });
+    }
+
+    public Observable<RepositoryItem> getPositionClicks(){
+        return onClickSubject.asObservable();
     }
 
     @Override

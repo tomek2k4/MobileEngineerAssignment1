@@ -1,6 +1,8 @@
 package com.pum.tomasz.mobileengineerassignment1.model;
 
 
+import java.io.Serializable;
+
 import lombok.Data;
 /**
  * Created by tomasz on 12.10.2017.
@@ -8,7 +10,7 @@ import lombok.Data;
 
 
 @Data
-public class RepositoryItem {
+public class RepositoryItem implements Serializable{
 
     public static final String JSON_ARRAY_NAME = "items";
 
@@ -83,10 +85,4 @@ public class RepositoryItem {
     private String defaultBranch;
     private Double score;
 
-
-    public RepositoryItem(Integer id, String name, String description) {
-        this.id = id;
-        this.name = name;
-        this.description = description;
-    }
 }

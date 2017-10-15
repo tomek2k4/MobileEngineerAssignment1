@@ -12,6 +12,7 @@ public interface RepositoriesView extends View{
 
     void showLoading();
     void showRepositories(List<RepositoryItem> repos);
+    void showRepositoryDetail(RepositoryItem repositoryItem);
     void showError();
     void showEmpty();
 }
