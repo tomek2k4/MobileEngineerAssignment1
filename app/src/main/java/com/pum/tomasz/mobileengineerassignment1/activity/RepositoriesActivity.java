@@ -98,7 +98,6 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
             @Override
             public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
                 if(charSequence.length() != 0){
-                    Log.d("Tomek","Text changed");
                     repositoriesPresenter.filterRepositories(charSequence.toString());
                 }else{
                     repositoriesPresenter.onRefresh();
