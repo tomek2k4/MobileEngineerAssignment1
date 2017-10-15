@@ -4,8 +4,11 @@ import com.pum.tomasz.mobileengineerassignment1.frontend.FetchSquareRepositories
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 import com.pum.tomasz.mobileengineerassignment1.view.RepositoriesView;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import rx.Observable;
+import rx.Observer;
 import rx.Subscription;
 import rx.functions.Action1;
 import rx.functions.Func1;
@@ -29,11 +32,8 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
         this.fetchSquareRepositoriesUsecase = fetchSquareRepositoriesUsecase;
     }
 
-
-
     @Override
     public void onCreate() {
-
     }
 
     @Override
@@ -50,7 +50,6 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
         if(clickItemSubscription != null && !clickItemSubscription.isUnsubscribed()) {
             clickItemSubscription.unsubscribe();
         }
-
     }
 
     @Override
@@ -64,7 +63,6 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
     }
 
     public void onRefresh() {
-        repositoriesCollection = null;
         getRepositories();
     }
 
@@ -72,6 +70,7 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
     private void getRepositories() {
         if (repositoriesCollection != null && repositoriesView != null) {
             repositoriesView.showRepositories(repositoriesCollection);
+            return;
         } else {
             repositoriesView.showLoading();
         }
@@ -100,6 +99,37 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
                 });
     }
 
+    public void filterRepositories(final String charSequence) {
+        if(repositoriesCollection != null && repositoriesCollection.size()!=0) {
+            final List<RepositoryItem> filteredRepositoriesList = new ArrayList<>();
+            Observable.from(repositoriesCollection)
+                    //.filter((repositoryItem) -> repositoryItem.getName().contains(charSequence))
+                    .filter(new Func1<RepositoryItem, Boolean>() {
+                        @Override
+                        public Boolean call(RepositoryItem repositoryItem) {
+                            return repositoryItem.getName().toLowerCase().contains(charSequence.toLowerCase());
+                        }
+                    })
+                    .subscribeOn(Schedulers.io())
+                    .subscribe(new Observer<RepositoryItem>() {
+                        @Override
+                        public void onCompleted() {
+                            repositoriesView.showRepositories(filteredRepositoriesList);
+                        }
+
+                        @Override
+                        public void onError(Throwable e) {
+                            repositoriesView.showError();
+                        }
+
+                        @Override
+                        public void onNext(RepositoryItem repositoryItem) {
+                            filteredRepositoriesList.add(repositoryItem);
+                        }
+                    });
+        }
+
+    }
 
     public void setClickItemSubscription(Subscription subscription) {
         clickItemSubscription = subscription;

@@ -2,7 +2,6 @@ package com.pum.tomasz.mobileengineerassignment1.adapter;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -66,17 +65,17 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoryViewHold
         return context.getString(id, values);
     }
 
-    public void addEvent(RepositoryItem repositoryItem) {
+    public void addRepository(RepositoryItem repositoryItem) {
         reposList.add(repositoryItem);
         notifyItemInserted(getItemCount() - 1);
     }
 
-    public void addEvents(Collection<RepositoryItem> repositoryItems) {
+    public void addRepositories(Collection<RepositoryItem> repositoryItems) {
         reposList.addAll(repositoryItems);
         notifyDataSetChanged();
     }
 
-    public void replaceEvents(Collection<RepositoryItem> repositoryItems) {
+    public void replaceRepositories(Collection<RepositoryItem> repositoryItems) {
         reposList.clear();
         reposList.addAll(repositoryItems);
         notifyDataSetChanged();

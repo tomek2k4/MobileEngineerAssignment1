@@ -6,11 +6,8 @@ import android.widget.TextView;
 
 import com.pum.tomasz.mobileengineerassignment1.R;
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
-import com.pum.tomasz.mobileengineerassignment1.presenter.RepositoriesPresenter;
 import com.pum.tomasz.mobileengineerassignment1.presenter.RepositoryPresenter;
 import com.pum.tomasz.mobileengineerassignment1.view.RepositoryView;
-
-import java.text.SimpleDateFormat;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;

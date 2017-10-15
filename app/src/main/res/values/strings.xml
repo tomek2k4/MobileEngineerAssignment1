@@ -4,4 +4,5 @@
     <string name="main_repositories_loading">Loading repositories</string>
     <string name="repo_name">Name: %s</string>
     <string name="repo_desc">Description: %s</string>
+    <string name="search_hint">Start typing for filtering results</string>
 </resources>

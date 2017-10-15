@@ -6,8 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
@@ -58,6 +61,9 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
     @Bind(R.id.ar_empty_list)
     View emptyListView;
 
+    @Bind(R.id.ar_search_edit_text)
+    EditText searchEditText;
+
     private RepositoriesAdapter repositoriesAdapter;
     private Retrofit retrofit;
 
@@ -76,31 +82,38 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
         setupRefreshLayout();
 
         initOnClicListenerSubscription();
+        initSearchTextChangedListener();
     }
 
-    private void initOnClicListenerSubscription() {
-        repositoriesPresenter.setClickItemSubscription(
-                repositoriesAdapter.getPositionClicks()
-                .subscribeOn(Schedulers.io())
-                .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<RepositoryItem>() {
-                    @Override
-                    public void call(RepositoryItem repositoryItem) {
-                        Log.d("Tomek","Clicked on repository with name: " + repositoryItem.getName());
+    private void initSearchTextChangedListener() {
+        searchEditText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
 
-                        repositoriesPresenter.setSelectedItem(repositoryItem);
-                    }
-                })
-        );
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                if(charSequence.length() != 0){
+                    Log.d("Tomek","Text changed");
+                    repositoriesPresenter.filterRepositories(charSequence.toString());
+                }else{
+                    repositoriesPresenter.onRefresh();
+                }
+            }
+        });
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
+        searchEditText.setText("");
         repositoriesPresenter.onStart();
-        if(repositoriesPresenter.getClickItemSubscription() == null || repositoriesPresenter.getClickItemSubscription().isUnsubscribed()) {
-            initOnClicListenerSubscription();
-        }
+        initOnClicListenerSubscription();
 
     }
 
@@ -135,7 +148,7 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
 
 
     public void addRepositories(Collection<RepositoryItem> reposCollection) {
-        repositoriesAdapter.replaceEvents(reposCollection);
+        repositoriesAdapter.replaceRepositories(reposCollection);
         reposList.getAdapter().notifyDataSetChanged();
     }
 
@@ -219,6 +232,7 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                searchEditText.setText("");
                 repositoriesPresenter.onRefresh();
             }
         });
@@ -226,6 +240,25 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
 
     private void initRepositories() {
         repositoriesPresenter.attachView(this);
+    }
+
+    private void initOnClicListenerSubscription() {
+        if(repositoriesPresenter.getClickItemSubscription() == null || repositoriesPresenter.getClickItemSubscription().isUnsubscribed()) {
+            repositoriesPresenter.setClickItemSubscription(
+                repositoriesAdapter.getPositionClicks()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(new Action1<RepositoryItem>() {
+                            @Override
+                            public void call(RepositoryItem repositoryItem) {
+                                Log.d("Tomek","Clicked on repository with name: " + repositoryItem.getName());
+
+                                repositoriesPresenter.setSelectedItem(repositoryItem);
+                            }
+                        })
+            );
+        }
+
     }
 
 

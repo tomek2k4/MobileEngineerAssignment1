@@ -6,6 +6,14 @@
     android:orientation="vertical"
     >
 
+    <EditText
+        android:id="@+id/ar_search_edit_text"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:hint="@string/search_hint"
+        />
+
     <TextView
         android:id="@+id/ar_empty_list"
         android:layout_width="match_parent"
