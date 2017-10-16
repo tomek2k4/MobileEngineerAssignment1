@@ -6,8 +6,9 @@ import com.pum.tomasz.mobileengineerassignment1.service.GithubService;
 
 import java.util.List;
 
-import retrofit.Retrofit;
-import rx.Observable;
+import io.reactivex.Observable;
+import retrofit2.Retrofit;
+
 
 /**
  * Created by tomasz on 13.10.2017.

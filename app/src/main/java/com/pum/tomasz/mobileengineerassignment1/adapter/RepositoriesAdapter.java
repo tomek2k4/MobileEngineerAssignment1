@@ -13,8 +13,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import rx.Observable;
-import rx.subjects.PublishSubject;
+import io.reactivex.Observable;
+import io.reactivex.subjects.PublishSubject;
+
 
 public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoryViewHolder> {
 
@@ -53,7 +54,7 @@ public class RepositoriesAdapter extends RecyclerView.Adapter<RepositoryViewHold
     }
 
     public Observable<RepositoryItem> getPositionClicks(){
-        return onClickSubject.asObservable();
+        return onClickSubject.hide();
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.pum.tomasz.mobileengineerassignment1.frontend;
 
-import rx.Observable;
+
+import io.reactivex.Observable;
 
 public interface Usecase<T> {
     Observable<T> execute();

@@ -4,15 +4,20 @@ import com.pum.tomasz.mobileengineerassignment1.frontend.FetchSquareRepositories
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 import com.pum.tomasz.mobileengineerassignment1.view.RepositoriesView;
 
+
+import org.reactivestreams.Subscription;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import rx.Observable;
-import rx.Observer;
-import rx.Subscription;
-import rx.functions.Action1;
-import rx.functions.Func1;
-import rx.schedulers.Schedulers;
+import io.reactivex.Observable;
+import io.reactivex.Observer;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.functions.Predicate;
+import io.reactivex.schedulers.Schedulers;
+
 
 /**
  * Created by tomasz on 13.10.2017.
@@ -20,8 +25,8 @@ import rx.schedulers.Schedulers;
 
 public class RepositoriesPresenter implements Presenter<RepositoriesView> {
 
-    private Subscription getRepositoriesSubscription;
-    private Subscription clickItemSubscription;
+    private Disposable getRepositoriesSubscription;
+    private Disposable clickItemSubscription;
     private RepositoriesView repositoriesView;
     private FetchSquareRepositoriesUsecase fetchSquareRepositoriesUsecase;
 
@@ -43,12 +48,12 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
 
     @Override
     public void onStop() {
-        if (getRepositoriesSubscription != null && !getRepositoriesSubscription.isUnsubscribed()) {
-            getRepositoriesSubscription.unsubscribe();
+        if (getRepositoriesSubscription != null && !getRepositoriesSubscription.isDisposed()) {
+            getRepositoriesSubscription.dispose();
         }
 
-        if(clickItemSubscription != null && !clickItemSubscription.isUnsubscribed()) {
-            clickItemSubscription.unsubscribe();
+        if(clickItemSubscription != null && !clickItemSubscription.isDisposed()) {
+            clickItemSubscription.dispose();
         }
     }
 
@@ -76,17 +81,18 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
         }
         getRepositoriesSubscription = fetchSquareRepositoriesUsecase.execute()
                 .subscribeOn(Schedulers.io())
-                .onErrorReturn(new Func1<Throwable, List<RepositoryItem>>() {
+                .onErrorReturn(new Function<Throwable, List<RepositoryItem>>() {
                     @Override
-                    public List<RepositoryItem> call(Throwable throwable) {
+                    public List<RepositoryItem> apply(Throwable throwable) throws Exception {
                         throwable.printStackTrace();
                         repositoriesView.showError();
                         return null;
                     }
+
                 })
-                .subscribe(new Action1<List<RepositoryItem>>() {
+                .subscribe(new Consumer<List<RepositoryItem>>() {
                     @Override
-                    public void call(List<RepositoryItem> repositoryItems) {
+                    public void accept(List<RepositoryItem> repositoryItems) throws Exception {
                         if (repositoryItems != null) {
                             if (repositoryItems != null && repositoryItems.size() > 0) {
                                 repositoriesCollection = repositoryItems;
@@ -102,24 +108,36 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
     public void filterRepositories(final String charSequence) {
         if(repositoriesCollection != null && repositoriesCollection.size()!=0) {
             final List<RepositoryItem> filteredRepositoriesList = new ArrayList<>();
-            Observable.from(repositoriesCollection)
+            Observable.fromIterable(repositoriesCollection)
                     //.filter((repositoryItem) -> repositoryItem.getName().contains(charSequence))
-                    .filter(new Func1<RepositoryItem, Boolean>() {
+//                    .filter(new Function<RepositoryItem, Boolean>() {
+//                        @Override
+//                        public Boolean apply(RepositoryItem repositoryItem) throws Exception {
+//                            return repositoryItem.getName().toLowerCase().contains(charSequence.toLowerCase());
+//                        }
+//                    })
+                    .filter(new Predicate<RepositoryItem>() {
                         @Override
-                        public Boolean call(RepositoryItem repositoryItem) {
+                        public boolean test(RepositoryItem repositoryItem) throws Exception {
                             return repositoryItem.getName().toLowerCase().contains(charSequence.toLowerCase());
                         }
                     })
                     .subscribeOn(Schedulers.io())
                     .subscribe(new Observer<RepositoryItem>() {
-                        @Override
-                        public void onCompleted() {
-                            repositoriesView.showRepositories(filteredRepositoriesList);
-                        }
 
                         @Override
                         public void onError(Throwable e) {
                             repositoriesView.showError();
+                        }
+
+                        @Override
+                        public void onComplete() {
+                            repositoriesView.showRepositories(filteredRepositoriesList);
+                        }
+
+                        @Override
+                        public void onSubscribe(Disposable d) {
+
                         }
 
                         @Override
@@ -131,11 +149,11 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
 
     }
 
-    public void setClickItemSubscription(Subscription subscription) {
+    public void setClickItemSubscription(Disposable subscription) {
         clickItemSubscription = subscription;
     }
 
-    public Subscription getClickItemSubscription() {
+    public Disposable getClickItemSubscription() {
         return clickItemSubscription;
     }
 

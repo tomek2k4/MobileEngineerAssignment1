@@ -27,20 +27,21 @@ import com.pum.tomasz.mobileengineerassignment1.model.GithubSearchResultWrapper;
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 import com.pum.tomasz.mobileengineerassignment1.presenter.RepositoriesPresenter;
 import com.pum.tomasz.mobileengineerassignment1.view.RepositoriesView;
-import com.squareup.okhttp.OkHttpClient;
-import com.squareup.okhttp.logging.HttpLoggingInterceptor;
 
 import java.util.Collection;
 import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import retrofit.GsonConverterFactory;
-import retrofit.Retrofit;
-import retrofit.RxJavaCallAdapterFactory;
-import rx.android.schedulers.AndroidSchedulers;
-import rx.functions.Action1;
-import rx.schedulers.Schedulers;
+
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
+import okhttp3.OkHttpClient;
+import okhttp3.logging.HttpLoggingInterceptor;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RepositoriesActivity extends AppCompatActivity implements RepositoriesView {
@@ -208,15 +209,16 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
                 .create();
 
         GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(gson);
-        OkHttpClient client = new OkHttpClient();
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-        client.interceptors().add(logging);
+
+
+        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(logging).build();
         retrofit = new Retrofit.Builder()
                 .baseUrl(endpointUrl)
                 .client(client)
                 .addConverterFactory(gsonConverterFactory)
-                .addCallAdapterFactory(RxJavaCallAdapterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
                 .build();
     }
 
@@ -242,14 +244,14 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
     }
 
     private void initOnClicListenerSubscription() {
-        if(repositoriesPresenter.getClickItemSubscription() == null || repositoriesPresenter.getClickItemSubscription().isUnsubscribed()) {
+        if(repositoriesPresenter.getClickItemSubscription() == null || repositoriesPresenter.getClickItemSubscription().isDisposed()) {
             repositoriesPresenter.setClickItemSubscription(
                 repositoriesAdapter.getPositionClicks()
-                        .subscribeOn(Schedulers.io())
                         .observeOn(AndroidSchedulers.mainThread())
-                        .subscribe(new Action1<RepositoryItem>() {
+                        .subscribeOn(Schedulers.computation())
+                        .subscribe(new Consumer<RepositoryItem>() {
                             @Override
-                            public void call(RepositoryItem repositoryItem) {
+                            public void accept(RepositoryItem repositoryItem) throws Exception {
                                 Log.d("Tomek","Clicked on repository with name: " + repositoryItem.getName());
 
                                 repositoriesPresenter.setSelectedItem(repositoryItem);

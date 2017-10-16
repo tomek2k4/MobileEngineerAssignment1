@@ -4,8 +4,8 @@ import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 
 import java.util.List;
 
+import io.reactivex.Observable;
 
-import rx.Observable;
 
 /**
  * Created by tomasz on 13.10.2017.

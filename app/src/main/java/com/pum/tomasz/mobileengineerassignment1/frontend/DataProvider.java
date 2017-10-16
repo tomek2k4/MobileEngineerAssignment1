@@ -5,7 +5,7 @@ import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 
 import java.util.List;
 
-import rx.Observable;
+import io.reactivex.Observable;
 
 public interface DataProvider {
     Observable<GithubSearchResultWrapper<List<RepositoryItem>>> getRepositoriesForUserSquare();
