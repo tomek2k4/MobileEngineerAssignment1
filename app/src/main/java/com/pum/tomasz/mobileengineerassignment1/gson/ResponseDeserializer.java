@@ -10,6 +10,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 import com.pum.tomasz.mobileengineerassignment1.activity.RepositoriesActivity;
+import com.pum.tomasz.mobileengineerassignment1.injector.module.NetworkModule;
 import com.pum.tomasz.mobileengineerassignment1.model.GithubSearchResultWrapper;
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 
@@ -23,7 +24,7 @@ public class ResponseDeserializer implements JsonDeserializer<GithubSearchResult
     }.getType();
 
     private Gson gson = new GsonBuilder()
-            .setFieldNamingPolicy(RepositoriesActivity.API_JSON_NAMING_POLICY)
+            .setFieldNamingPolicy(NetworkModule.API_JSON_NAMING_POLICY)
             .create();
 
     @Override

@@ -110,12 +110,6 @@ public class RepositoriesPresenter implements Presenter<RepositoriesView> {
             final List<RepositoryItem> filteredRepositoriesList = new ArrayList<>();
             Observable.fromIterable(repositoriesCollection)
                     //.filter((repositoryItem) -> repositoryItem.getName().contains(charSequence))
-//                    .filter(new Function<RepositoryItem, Boolean>() {
-//                        @Override
-//                        public Boolean apply(RepositoryItem repositoryItem) throws Exception {
-//                            return repositoryItem.getName().toLowerCase().contains(charSequence.toLowerCase());
-//                        }
-//                    })
                     .filter(new Predicate<RepositoryItem>() {
                         @Override
                         public boolean test(RepositoryItem repositoryItem) throws Exception {

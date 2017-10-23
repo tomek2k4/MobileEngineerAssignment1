@@ -1,29 +1,24 @@
 package com.pum.tomasz.mobileengineerassignment1.activity;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 
-import com.google.gson.FieldNamingPolicy;
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.pum.tomasz.mobileengineerassignment1.BuildConfig;
+import com.pum.tomasz.mobileengineerassignment1.MobileEngineerAssignment1Application;
 import com.pum.tomasz.mobileengineerassignment1.R;
 import com.pum.tomasz.mobileengineerassignment1.adapter.RepositoriesAdapter;
-import com.pum.tomasz.mobileengineerassignment1.frontend.DataProvider;
-import com.pum.tomasz.mobileengineerassignment1.frontend.FetchSquareRepositoriesUsecase;
-import com.pum.tomasz.mobileengineerassignment1.frontend.RetrofitRestDataProvider;
-import com.pum.tomasz.mobileengineerassignment1.gson.JsonExclusionStrategy;
-import com.pum.tomasz.mobileengineerassignment1.gson.ResponseDeserializer;
-import com.pum.tomasz.mobileengineerassignment1.model.GithubSearchResultWrapper;
+import com.pum.tomasz.mobileengineerassignment1.injector.component.ApplicationComponent;
+import com.pum.tomasz.mobileengineerassignment1.injector.component.DaggerRepositoriesComponent;
+import com.pum.tomasz.mobileengineerassignment1.injector.component.RepositoriesComponent;
+import com.pum.tomasz.mobileengineerassignment1.injector.module.ActivityModule;
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 import com.pum.tomasz.mobileengineerassignment1.presenter.RepositoriesPresenter;
 import com.pum.tomasz.mobileengineerassignment1.view.RepositoriesView;
@@ -31,23 +26,18 @@ import com.pum.tomasz.mobileengineerassignment1.view.RepositoriesView;
 import java.util.Collection;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
-
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.functions.Consumer;
 import io.reactivex.schedulers.Schedulers;
-import okhttp3.OkHttpClient;
-import okhttp3.logging.HttpLoggingInterceptor;
-import retrofit2.Retrofit;
-import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 
 public class RepositoriesActivity extends AppCompatActivity implements RepositoriesView {
 
-    public static final FieldNamingPolicy API_JSON_NAMING_POLICY = FieldNamingPolicy.LOWER_CASE_WITH_UNDERSCORES;
-
+    @Inject
     RepositoriesPresenter repositoriesPresenter;
 
     @Bind(R.id.ar_list)
@@ -66,8 +56,7 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
     EditText searchEditText;
 
     private RepositoriesAdapter repositoriesAdapter;
-    private Retrofit retrofit;
-
+    private RepositoriesComponent repositoriesComponent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,8 +65,8 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
         ButterKnife.bind(this);
         initAdapter();
         initList();
-        initializeRetrofit();
-        initPresenter();
+        injectDependencies();
+        repositoriesPresenter.onCreate();
 
         initRepositories();
         setupRefreshLayout();
@@ -198,35 +187,15 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
         reposList.setAdapter(repositoriesAdapter);
     }
 
-    private void initializeRetrofit() {
-        String endpointUrl = BuildConfig.githubApiEndpointUrl;
+    private void injectDependencies() {
+        ApplicationComponent appComponent = ((MobileEngineerAssignment1Application) getApplication()).getApplicationComponent();
 
-        Gson gson = new GsonBuilder()
-                .setFieldNamingPolicy(API_JSON_NAMING_POLICY)
-                .registerTypeAdapter(GithubSearchResultWrapper.class, new ResponseDeserializer())
-                .addSerializationExclusionStrategy(new JsonExclusionStrategy())
-                .addDeserializationExclusionStrategy(new JsonExclusionStrategy())
-                .create();
-
-        GsonConverterFactory gsonConverterFactory = GsonConverterFactory.create(gson);
-        HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel(HttpLoggingInterceptor.Level.BODY);
-
-
-        OkHttpClient client = new OkHttpClient.Builder().addInterceptor(logging).build();
-        retrofit = new Retrofit.Builder()
-                .baseUrl(endpointUrl)
-                .client(client)
-                .addConverterFactory(gsonConverterFactory)
-                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+        RepositoriesComponent repositoriesComponent = DaggerRepositoriesComponent.builder()
+                .activityModule(new ActivityModule(this))
+                .applicationComponent(appComponent)
                 .build();
-    }
+        repositoriesComponent.inject(this);
 
-    private void initPresenter() {
-        DataProvider dataProvider = new RetrofitRestDataProvider(retrofit);
-        FetchSquareRepositoriesUsecase fetchSquareRepositoriesUsecase = new FetchSquareRepositoriesUsecase(dataProvider);
-        repositoriesPresenter = new RepositoriesPresenter(fetchSquareRepositoriesUsecase);
-        repositoriesPresenter.onCreate();
     }
 
     private void setupRefreshLayout() {
