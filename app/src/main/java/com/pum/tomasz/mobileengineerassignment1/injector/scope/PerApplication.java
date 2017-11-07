@@ -3,6 +3,7 @@ package com.pum.tomasz.mobileengineerassignment1.injector.scope;
 import java.lang.annotation.Retention;
 
 import javax.inject.Scope;
+import javax.inject.Singleton;
 
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
@@ -12,4 +13,5 @@ import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 @Scope
 @Retention(RUNTIME)
+@Singleton
 public @interface PerApplication {}

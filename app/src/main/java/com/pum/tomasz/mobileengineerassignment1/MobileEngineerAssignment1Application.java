@@ -24,9 +24,7 @@ public class MobileEngineerAssignment1Application extends Application {
     }
 
     private void setupInjector() {
-        applicationComponent = DaggerApplicationComponent.builder()
-                .applicationModule(new ApplicationModule(this))
-                .build();
+        applicationComponent = DaggerApplicationComponent.create();
     }
 
     public ApplicationComponent getApplicationComponent() {

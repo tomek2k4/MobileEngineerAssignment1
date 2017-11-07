@@ -4,16 +4,23 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
+import com.pum.tomasz.mobileengineerassignment1.MobileEngineerAssignment1Application;
 import com.pum.tomasz.mobileengineerassignment1.R;
+import com.pum.tomasz.mobileengineerassignment1.injector.component.ApplicationComponent;
+import com.pum.tomasz.mobileengineerassignment1.injector.component.DaggerRepositoriesComponent;
+import com.pum.tomasz.mobileengineerassignment1.injector.component.RepositoriesComponent;
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 import com.pum.tomasz.mobileengineerassignment1.presenter.RepositoryPresenter;
 import com.pum.tomasz.mobileengineerassignment1.view.RepositoryView;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class RepositoryActivity extends AppCompatActivity implements RepositoryView {
 
+    @Inject
     RepositoryPresenter repositoryPresenter;
 
     @Bind(R.id.ar_repository_details)
@@ -37,7 +44,13 @@ public class RepositoryActivity extends AppCompatActivity implements RepositoryV
     }
 
     private void initPresenter() {
-        repositoryPresenter = new RepositoryPresenter();
+        ApplicationComponent applicationComponent = ((MobileEngineerAssignment1Application) getApplication()).getApplicationComponent();
+
+        RepositoriesComponent repositoriesComponent = DaggerRepositoriesComponent.builder()
+                .applicationComponent(applicationComponent)
+                .build();
+        repositoriesComponent.inject(this);
+
         repositoryPresenter.onCreate();
     }
 

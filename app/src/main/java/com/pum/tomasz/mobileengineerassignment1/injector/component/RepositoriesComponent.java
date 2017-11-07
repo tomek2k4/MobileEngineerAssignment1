@@ -1,10 +1,9 @@
 package com.pum.tomasz.mobileengineerassignment1.injector.component;
 
-import android.content.Context;
-
 import com.pum.tomasz.mobileengineerassignment1.activity.RepositoriesActivity;
-import com.pum.tomasz.mobileengineerassignment1.injector.module.ActivityModule;
+import com.pum.tomasz.mobileengineerassignment1.activity.RepositoryActivity;
 import com.pum.tomasz.mobileengineerassignment1.injector.module.RepositoriesModule;
+import com.pum.tomasz.mobileengineerassignment1.injector.module.RepositoryModule;
 import com.pum.tomasz.mobileengineerassignment1.injector.scope.PerActivity;
 
 import dagger.Component;
@@ -15,13 +14,12 @@ import dagger.Component;
 
 @PerActivity
 @Component (dependencies = ApplicationComponent.class,
-        modules = {ActivityModule.class,
-                RepositoriesModule.class
-
+        modules = {
+                RepositoriesModule.class,
+                RepositoryModule.class
         })
 
 public interface RepositoriesComponent {
     void inject(RepositoriesActivity repositoriesActivity);
-    Context context();
-
+    void inject(RepositoryActivity repositoryActivity);
 }

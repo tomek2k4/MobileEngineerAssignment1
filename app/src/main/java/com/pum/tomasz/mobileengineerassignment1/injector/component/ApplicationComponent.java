@@ -18,8 +18,5 @@ import dagger.Component;
 @Component(modules = {ApplicationModule.class,NetworkModule.class})
 
 public interface ApplicationComponent {
-
-    Application application();
-    MobileEngineerAssignment1Application mobileEngineerAssignment1Application();
     DataProvider dataProvider();
 }

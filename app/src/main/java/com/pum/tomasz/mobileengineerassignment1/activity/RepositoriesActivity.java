@@ -18,7 +18,6 @@ import com.pum.tomasz.mobileengineerassignment1.adapter.RepositoriesAdapter;
 import com.pum.tomasz.mobileengineerassignment1.injector.component.ApplicationComponent;
 import com.pum.tomasz.mobileengineerassignment1.injector.component.DaggerRepositoriesComponent;
 import com.pum.tomasz.mobileengineerassignment1.injector.component.RepositoriesComponent;
-import com.pum.tomasz.mobileengineerassignment1.injector.module.ActivityModule;
 import com.pum.tomasz.mobileengineerassignment1.model.RepositoryItem;
 import com.pum.tomasz.mobileengineerassignment1.presenter.RepositoriesPresenter;
 import com.pum.tomasz.mobileengineerassignment1.view.RepositoriesView;
@@ -68,7 +67,7 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
         injectDependencies();
         repositoriesPresenter.onCreate();
 
-        initRepositories();
+        repositoriesPresenter.attachView(this);
         setupRefreshLayout();
 
         initOnClicListenerSubscription();
@@ -188,11 +187,11 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
     }
 
     private void injectDependencies() {
-        ApplicationComponent appComponent = ((MobileEngineerAssignment1Application) getApplication()).getApplicationComponent();
 
-        RepositoriesComponent repositoriesComponent = DaggerRepositoriesComponent.builder()
-                .activityModule(new ActivityModule(this))
-                .applicationComponent(appComponent)
+        ApplicationComponent applicationComponent = ((MobileEngineerAssignment1Application) getApplication()).getApplicationComponent();
+
+        repositoriesComponent = DaggerRepositoriesComponent.builder()
+                .applicationComponent(applicationComponent)
                 .build();
         repositoriesComponent.inject(this);
 
@@ -208,9 +207,6 @@ public class RepositoriesActivity extends AppCompatActivity implements Repositor
         });
     }
 
-    private void initRepositories() {
-        repositoriesPresenter.attachView(this);
-    }
 
     private void initOnClicListenerSubscription() {
         if(repositoriesPresenter.getClickItemSubscription() == null || repositoriesPresenter.getClickItemSubscription().isDisposed()) {
